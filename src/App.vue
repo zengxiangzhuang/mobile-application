@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import { useRouter, useRoute } from 'vue-router' // 导入路由钩子
-import { homeOutline, mailOutline, personOutline } from 'ionicons/icons'
+import { useRoute } from 'vue-router'
+import { homeOutline, personOutline } from 'ionicons/icons'
 
-// 初始化路由实例
-const router = useRouter()
-console.log(router)
-const route = useRoute() // 用于获取当前路由，实现选中高亮
+const route = useRoute()
 
 // TabBar 列表（包含标签、图标、跳转路径）
 const list = [
-  { label: 'entry', icon: homeOutline, path: '/' },
-  { label: 'contact', icon: mailOutline, path: '/contact' },
+  { label: 'home', icon: homeOutline, path: '/' },
   { label: 'mine', icon: personOutline, path: '/mine' },
 ]
 
@@ -67,7 +63,7 @@ const isActive = (path: string) => {
 }
 
 .tabbar-item {
-  width: 33.3%;
+  width: 50%;
   text-align: center;
 }
 

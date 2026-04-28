@@ -9,12 +9,6 @@ const routes = [
     meta: { title: '首页' }, // 可选：页面标题，方便全局设置
   },
   {
-    path: '/contact',
-    name: 'Contact',
-    component: () => import('@/pages/ContactPage.vue'), // 联系页
-    meta: { title: '联系我们' },
-  },
-  {
     path: '/mine',
     name: 'Mine',
     component: () => import('@/pages/MinePage.vue'), // 我的页面

@@ -1,303 +1,256 @@
-<template>
-  <div class="page">
-    <div class="panel">
-      <h1 class="title">幸运大转盘</h1>
-      <p class="subtitle">轻点按钮，试试今天的运气</p>
-
-      <div class="wheel-wrap">
-        <div class="pointer"></div>
-
-        <div class="wheel-ring">
-          <div class="wheel" :style="wheelStyle">
-            <!--
-              这段代码通过 v-for 指令，遍历 prizes 数组中的每一项（item 表示奖项，index 表示索引）。
-              每一个奖项都会渲染成一个 <div>，它的显示文本为奖项的名字（{{ item.name }}）。
-              :key 指定为 prize 的名字，用于高效地更新 DOM。
-              class="label" 应用于每个奖项的标签样式。
-              :style="getLabelStyle(index)" 则根据当前奖项的索引调用 getLabelStyle 方法，设置每个标签的样式（比如旋转角度等，用于让文字在大转盘上正确分布）。
-            -->
-            <div
-              v-for="(item, index) in prizes"
-              :key="item.name"
-              class="label"
-              :style="getLabelStyle(index)"
-            >
-              {{ item.name }}
-            </div>
-
-            <div class="center-dot">GO</div>
-          </div>
-        </div>
-      </div>
-
-      <button class="spin-btn" :disabled="isSpinning" @click="spin">
-        {{ isSpinning ? "抽奖中..." : "开始抽奖" }}
-      </button>
-
-      <p class="result">{{ resultText }}</p>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { computed, ref } from "vue";
-
-type Prize = {
-  name: string;
-  color: string;
-};
-
-const prizes: Prize[] = [
-  { name: "谢谢参与", color: "#ff7675" },
-  { name: "5元红包", color: "#74b9ff" },
-  { name: "再来一次", color: "#55efc4" },
-  { name: "10积分", color: "#ffeaa7" },
-  { name: "20元券", color: "#a29bfe" },
-  { name: "1元红包", color: "#fab1a0" },
-  { name: "神秘礼包", color: "#81ecec" },
-  { name: "100积分", color: "#fdcb6e" },
+const highlights = [
+  {
+    title: "页面开发",
+    description: "基于 Vue 3 与 Ionic 构建移动端页面，兼顾交互体验与开发效率。",
+  },
+  {
+    title: "组件复用",
+    description: "梳理公共模块，降低重复开发成本，让页面结构更清晰易维护。",
+  },
+  {
+    title: "兼容适配",
+    description: "兼顾小屏设备、底部安全区和常见 WebView，保证显示稳定。",
+  },
 ];
 
-const isSpinning = ref(false);
-const currentRotation = ref(0);
-const resultText = ref("点击开始抽奖，看看今天手气如何！");
-
-const segmentAngle = computed(() => 360 / prizes.length);
-
-const wheelBackground = computed(() => {
-  const segments = prizes.map((item, index) => {
-    const start = index * segmentAngle.value;
-    const end = (index + 1) * segmentAngle.value;
-    return `${item.color} ${start}deg ${end}deg`;
-  });
-  return `conic-gradient(${segments.join(", ")})`;
-});
-
-const wheelStyle = computed(() => ({
-  background: wheelBackground.value,
-  transform: `rotate(${currentRotation.value}deg)`,
-  transition: isSpinning.value ? "transform 4.5s cubic-bezier(0.22, 1, 0.36, 1)" : "none",
-}));
-
-const getLabelStyle = (index: number) => {
-  const angle = index * segmentAngle.value + segmentAngle.value / 2;
-  return {
-    transform: `rotate(${angle}deg) translateY(-115px) rotate(${-angle}deg)`,
-  };
-};
-
-const spin = () => {
-  if (isSpinning.value) {
-    return;
-  }
-
-  isSpinning.value = true;
-  resultText.value = "转盘飞速旋转中...";
-
-  const winnerIndex = Math.floor(Math.random() * prizes.length);
-  const winnerCenterAngle = winnerIndex * segmentAngle.value + segmentAngle.value / 2;
-  const currentNormalized = ((currentRotation.value % 360) + 360) % 360;
-  const alignToPointer = (360 - winnerCenterAngle - currentNormalized + 360) % 360;
-  const extraSpins = 4 + Math.floor(Math.random() * 3);
-  const totalRotate = extraSpins * 360 + alignToPointer;
-
-  currentRotation.value += totalRotate;
-
-  window.setTimeout(() => {
-    isSpinning.value = false;
-    resultText.value = `恭喜你抽中：${prizes[winnerIndex].name}`;
-  }, 4600);
-};
+const actions = [
+  { label: "查看个人主页", path: "/mine" },
+  { label: "开始浏览项目", path: "#features" },
+];
 </script>
+
+<template>
+  <div class="page">
+    <section class="hero">
+      <p class="eyebrow">WELCOME</p>
+      <h1 class="title">移动端页面示例项目</h1>
+      <p class="subtitle">
+        这是一个更常规的首页版本，聚焦页面展示、功能入口和项目亮点，不再保留抽奖交互。
+      </p>
+
+      <div class="action-group">
+        <router-link
+          v-for="item in actions"
+          :key="item.label"
+          :to="item.path"
+          class="action-btn"
+          :class="{ secondary: item.path === '#features' }"
+        >
+          {{ item.label }}
+        </router-link>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="section-head">
+        <p class="section-kicker">PROJECT FEATURES</p>
+        <h2 class="section-title">首页重点内容</h2>
+      </div>
+
+      <div class="card-list">
+        <article v-for="item in highlights" :key="item.title" class="card">
+          <h3 class="card-title">{{ item.title }}</h3>
+          <p class="card-desc">{{ item.description }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="summary">
+      <div class="summary-card">
+        <p class="summary-label">当前项目</p>
+        <p class="summary-value">Vue 3 + TypeScript + Ionic</p>
+      </div>
+      <div class="summary-card">
+        <p class="summary-label">页面风格</p>
+        <p class="summary-value">简洁、适合移动端展示</p>
+      </div>
+    </section>
+  </div>
+</template>
 
 <style scoped>
 .page {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+  padding: 24px 16px calc(108px + env(safe-area-inset-bottom, 0px));
+  padding: 24px 16px calc(108px + constant(safe-area-inset-bottom));
+  box-sizing: border-box;
   background:
-    radial-gradient(circle at 18% 20%, #f9e8ff 0%, transparent 38%),
-    radial-gradient(circle at 80% 85%, #d9fbff 0%, transparent 36%),
-    linear-gradient(145deg, #f5f7ff, #ebeeff);
+    radial-gradient(circle at top left, rgba(97, 114, 255, 0.18), transparent 35%),
+    linear-gradient(180deg, #f6f8ff 0%, #eef3ff 100%);
 }
 
-.panel {
-  width: min(94vw, 420px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 30px 20px 24px;
+.hero,
+.card,
+.summary-card {
+  box-sizing: border-box;
+}
+
+.hero {
+  padding: 28px 20px;
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.65);
-  box-shadow:
-    0 22px 55px rgba(68, 58, 145, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(7px);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 18px 42px rgba(49, 73, 166, 0.12);
+}
+
+.eyebrow,
+.subtitle,
+.section-kicker,
+.card-desc,
+.summary-label,
+.summary-value {
+  margin: 0;
+}
+
+.eyebrow,
+.section-kicker {
+  font-size: 12px;
+  letter-spacing: 1.8px;
+  color: #6e78a8;
 }
 
 .title {
-  margin: 0;
+  margin: 10px 0 12px;
   font-size: 30px;
-  letter-spacing: 1px;
-  color: #2b2667;
+  line-height: 1.25;
+  color: #1d2850;
 }
 
 .subtitle {
-  margin: 0 0 8px;
-  font-size: 14px;
-  color: #6d6b8a;
+  max-width: 560px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #4d5a75;
 }
 
-.wheel-wrap {
-  position: relative;
-  width: 300px;
-  height: 300px;
-}
-
-.wheel-ring {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  padding: 10px;
-  background: linear-gradient(145deg, #ffffff, #f0f4ff);
-  box-shadow:
-    0 14px 30px rgba(68, 58, 145, 0.26),
-    0 0 0 5px rgba(255, 255, 255, 0.65);
-}
-
-.pointer {
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 16px solid transparent;
-  border-right: 16px solid transparent;
-  border-top: 28px solid #2b2667;
-  filter: drop-shadow(0 4px 6px rgba(43, 38, 103, 0.28));
-  z-index: 4;
-}
-
-.wheel {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border: 8px solid rgba(255, 255, 255, 0.95);
-  box-shadow:
-    inset 0 0 0 2px rgba(255, 255, 255, 0.65),
-    0 10px 26px rgba(0, 0, 0, 0.12);
-  overflow: hidden;
-}
-
-.label {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform-origin: center center;
-  width: 96px;
-  margin-left: -48px;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 800;
-  color: #1e1b4d;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.center-dot {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 66px;
-  height: 66px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #ffffff, #fff5d7);
+.action-group {
   display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.action-btn {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: #e17055;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
-}
-
-.spin-btn {
-  border: none;
+  min-width: 132px;
+  padding: 12px 18px;
   border-radius: 999px;
-  padding: 13px 30px;
-  margin-top: 4px;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #ffffff;
-  background: linear-gradient(135deg, #6e4dff, #4c7dff 55%, #2fb3ff);
-  box-shadow:
-    0 10px 20px rgba(80, 90, 255, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  cursor: pointer;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    filter 0.18s ease;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #6a5cff, #3b82f6);
+  box-shadow: 0 10px 18px rgba(72, 94, 255, 0.22);
 }
 
-.spin-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow:
-    0 14px 26px rgba(80, 90, 255, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+.action-btn.secondary {
+  color: #2f4ea2;
+  background: #eaf0ff;
+  box-shadow: none;
 }
 
-.spin-btn:active:not(:disabled) {
-  transform: translateY(0);
-  filter: brightness(0.98);
+.section {
+  margin-top: 18px;
 }
 
-.spin-btn:disabled {
-  opacity: 0.72;
-  cursor: not-allowed;
+.section-head {
+  margin-bottom: 12px;
 }
 
-.result {
-  margin: 0;
-  min-height: 44px;
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: 12px;
-  text-align: center;
-  font-size: 16px;
-  color: #2d235f;
-  background: rgba(255, 255, 255, 0.78);
-  box-shadow: inset 0 0 0 1px rgba(125, 124, 191, 0.2);
+.section-title {
+  margin: 6px 0 0;
+  font-size: 22px;
+  color: #1d2850;
 }
 
-@media (max-width: 420px) {
-  .panel {
-    padding: 24px 14px 18px;
-    border-radius: 20px;
+.card-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.card,
+.summary-card {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 28px rgba(49, 73, 166, 0.08);
+}
+
+.card-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: #22315d;
+}
+
+.card-desc {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #5d6983;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.summary-label {
+  font-size: 13px;
+  color: #6b7694;
+}
+
+.summary-value {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #25325d;
+}
+
+@supports (backdrop-filter: blur(8px)) {
+  .hero,
+  .card,
+  .summary-card {
+    backdrop-filter: blur(10px);
+  }
+}
+
+@media (max-width: 768px) {
+  .card-list,
+  .summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding-top: 18px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .hero,
+  .card,
+  .summary-card {
+    border-radius: 18px;
   }
 
   .title {
-    font-size: 24px;
+    font-size: 26px;
   }
 
-  .wheel-wrap {
-    width: 268px;
-    height: 268px;
+  .subtitle,
+  .card-desc,
+  .summary-value {
+    font-size: 14px;
   }
 
-  .label {
-    width: 86px;
-    margin-left: -43px;
-    font-size: 12px;
+  .action-btn {
+    width: 100%;
   }
 }
 </style>
