@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
+    "deploy": "gh-pages -d dist",
+    "publish": "npm run build && npm run deploy",
     "preview": "vite preview",
     "test:unit": "vitest",
     "test:e2e": "playwright test",
@@ -40,6 +42,7 @@
     "eslint-plugin-oxlint": "~1.50.0",
     "eslint-plugin-playwright": "^2.8.0",
     "eslint-plugin-vue": "~10.8.0",
+    "gh-pages": "^6.3.0",
     "jiti": "^2.6.1",
     "jsdom": "^28.1.0",
     "npm-run-all2": "^8.0.4",
