@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { homeOutline, personOutline } from 'ionicons/icons'
+import { homeOutline, personOutline, walletOutline } from 'ionicons/icons'
 
 const route = useRoute()
 
 // TabBar 列表（包含标签、图标、跳转路径）
 const list = [
   { label: 'home', icon: homeOutline, path: '/' },
+  { label: 'web3', icon: walletOutline, path: '/web3' },
   { label: 'mine', icon: personOutline, path: '/mine' },
 ]
 
@@ -63,7 +64,7 @@ const isActive = (path: string) => {
 }
 
 .tabbar-item {
-  width: 50%;
+  width: 33.333%;
   text-align: center;
 }
 

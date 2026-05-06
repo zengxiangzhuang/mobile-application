@@ -15,6 +15,7 @@ const highlights = [
 ];
 
 const actions = [
+  { label: "Web3 钱包", path: "/web3" },
   { label: "查看个人主页", path: "/mine" },
   { label: "开始浏览项目", path: "#features" },
 ];

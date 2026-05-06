@@ -14,6 +14,12 @@ const routes = [
     component: () => import('@/pages/MinePage.vue'), // 我的页面
     meta: { title: '个人中心' },
   },
+  {
+    path: '/web3',
+    name: 'Web3',
+    component: () => import('@/pages/Web3Page.vue'),
+    meta: { title: 'Web3' },
+  },
   // 404页面（可选，建议加）
   {
     path: '/:pathMatch(.*)*',
